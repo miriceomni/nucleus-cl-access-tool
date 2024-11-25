@@ -39,10 +39,9 @@ $ git clone repo <...>
 
 ### Install Omnivese Connect Samples
 Download and build the Omniverse Connect Samples. Site to get Connect SDK https://github.com/NVIDIA-Omniverse/connect-samples/releases.
-Use this site to get a pointer to the current archive
-
-Place this download zip/tar.gz anywhere on the client **local** filesystem.
-> Note: The SDK cannot be installed in a OneDrive location.
+Use this site to get a pointer to the current archive. Download zip/tar.gz to client **local** filesystem. The following is the directory used for this example: 
+- git clone at C:\omniverse\nucleus-cl-access-tool
+> Note: The SDK must be installed and built somewhere on  C: (no othe driver or a OneDrive location allowed)
 
 ***Windows***
 ```
