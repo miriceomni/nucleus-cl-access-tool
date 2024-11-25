@@ -21,6 +21,7 @@
 
 # coding: utf-8
 
+
 import argparse
 from pathlib import Path
 
@@ -159,7 +160,7 @@ def read_nuclues_file():
 
     (ret,_,content) = omni.client.read_file(omni_base_path)
     if ret.name == 'OK':
-        length  = len(memoryview(content).tobytes().decode())
+        length  = len(memoryview(content).tobytes())
        
     print(f'------------')
     print(f'[access-test]: read file : {omni_base_path} {ret.name} {length}')
@@ -198,7 +199,6 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--pre_delete_path",  action="store_true", default=False )
 
     parser.add_argument("-M", "--mode",  type=int, default=0, help='Tool method' )
-    # parser.add_argument("-L", "--list_directory",  action="store_true", default=False )
 
     build_infra(parser)
     

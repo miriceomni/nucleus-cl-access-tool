@@ -3,19 +3,27 @@
 
 
 ## Description
-The access-test tool was created to help debug client connections or data upload failures to a Nucleus server. This tool uses the Omniverse Connect Samples SDK along with a Python script `access-tool` . This script is executed at a command line and will do the following:
+This repository contains a tool (access-tool) that can be used to debug connection errors between an Omniverse client application and a Nucleus server. This tool will:
+1. Open a connection to a Nucleus server. The connection can be authenticated with either a username/password or service-account/API key
+2. Perform a test based on the Mode (-M <value> argument) and output brief status messages. The main use of this tool is to activate the verbose option (-v) to get ALL logging steps. The output will be directed to standard out and can be re-directed to a file (output can be very long in some cases).
+3. Close the connection.
+This tool relies on the Connect SDK https://github.com/NVIDIA-Omniverse/connect-samples/releases to perform the majority of the logic. 
 
-1. Open a connection to a Nucleus server. Server can be FQDN or raw IP address for targeting. The user name and password are specified on the command line.
-
-2. Once the connection is opened, all the files contained in the `usd-files` directory will be uploaded to the Nucleus server. There are two files currently in this repo directory (one is small and will not use LFT, the other is larger and thus will invoke LFT transport logic). The target location on the Nucleus server is also specified on the command line.
-
-3. Close the connection
-
+Tool Modes
+```
+-M 0 (open connection and then close immediately)
+-M 1
+-M 2 (read a file from Nucleus)
+-M 3
+```
 
 ## Prereqs
 
-### Clone this repo.
+### Clone this repo
 The following documetation is based on creating a directory called ***omniverse*** somewhere on the client **local** filesystem. The name of this directory is up to the user.
+
+> Note: Windows -> This repo AND the upcoming SDK install cannot be installed in a OneDrive location or any other drive other than C:
+
 
 ```
 PS > cd C:\
@@ -39,13 +47,11 @@ $ git clone repo <...>
 
 ### Install Omnivese Connect Samples
 Download and build the Omniverse Connect Samples. Site to get Connect SDK https://github.com/NVIDIA-Omniverse/connect-samples/releases.
-Use this site to get a pointer to the current archive. Download zip/tar.gz to client **local** filesystem. The following is the directory used for this example: 
-- git clone at C:\omniverse\nucleus-cl-access-tool
-> Note: The SDK must be installed and built somewhere on  C: (no othe driver or a OneDrive location allowed)
+Use this site to get a pointer to the current archive. Place this download zip/tar.gz on client **local** filesystem.
+> Note: Windows -> The SDK cannot be installed in a OneDrive location or any other drive other than C:
 
 ***Windows***
 ```
-For this example:
 PS > cd C:\omniverse\nucleus-cl-access-tool 
 PS > wget https://github.com/NVIDIA-Omniverse/connect-samples/archive/refs/tags/v205.0.0.zip -OutFile connect-sdk.zip
 PS > Expand-Archive .\connect-sdk.zip
@@ -142,17 +148,34 @@ Python 3.10.14
 [access-test]: Connection status to omniverse://ov-elysium.redshiftltd.net is ConnectionStatus.SIGNED_OUT
 ```
 ### Example Read File (-M 2)
+This test will read a file from a Nucleus server and place it into client memory (will not write file to local client storage). The file must exist in the Nucleus server and have proper permissions for reading. Test is used to debug file read issues from Omniverse applicaions.
 
 ```
-PS > .\access-test.bat -u '$omni-api-token' -v -M 2 ov-elysium.redshiftltd.net Projects/somefile.usd
+PS > .\access-test.bat -u omniverse -p xxxxxx -v -M 2 ov-elysium.redshiftltd.net Projects/somefile.usd
 ```
+Example output (without -v option)
+```
+PS > .\access-test.bat -u omniverse -p xxxxxx  -M 2 ov-elysium.redshiftltd.net Projects/sample.usdz
+Python 3.10.14
+[access-test]: Omni Client initialized2.47.1-hotfix.5338+tc.ff2e947b
+[access-test]: Connection status to omniverse://ov-elysium.redshiftltd.net is ConnectionStatus.CONNECTING
+[access-test]: Authenticating to omniverse://ov-elysium.redshiftltd.net
+[access-test]: Connection status to omniverse://ov-elysium.redshiftltd.net is ConnectionStatus.CONNECTED
+------------
+[access-test]: read file : omniverse://ov-elysium.redshiftltd.net/Projects/sample.usdz OK 8542841
+------------
+
+[access-test]: Connection status to omniverse://ov-elysium.redshiftltd.net is ConnectionStatus.SIGNED_OUT
+```
+
+
 
 ### Example List directory (-M 3)
 This test will simply list the contents of a directory on Nucleus.
 
 Following lists the root directory
 ```
-PS > .\access-test.bat -u '$omni-api-token' -v -M 3 ov-elysium.redshiftltd.net "/"
+PS > .\access-test.bat -u omniverse -p xxxxxx -v -M 3 ov-elysium.redshiftltd.net "/"
 Python 3.10.14
 [access-test]: Omni Client initialized2.47.1-hotfix.5338+tc.ff2e947b
 [access-test]: Connection status to omniverse://ov-elysium.redshiftltd.net is ConnectionStatus.CONNECTING
@@ -167,8 +190,8 @@ Python 3.10.14
 
 To list other directories do not include the "/". Example:
 ```
-PS > .\access-test.bat -u '$omni-api-token' -M 3 -v ov-elysium.redshiftltd.net "Projects"
-PS > .\access-test.bat -u '$omni-api-token' -M 3 -v ov-elysium.redshiftltd.net "NVIDIA/assets"
+PS > .\access-test.bat -u omniverse -p xxxxxx -M 3 -v ov-elysium.redshiftltd.net "Projects"
+PS > .\access-test.bat -u omniverse -p xxxxxx -M 3 -v ov-elysium.redshiftltd.net "NVIDIA/assets"
 ```
 
 If the `-v` option is used, a verbose log of all steps will be output to the console. This output data can show error/warning information that the Nucleus team can use to help debug
