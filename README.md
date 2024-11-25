@@ -14,7 +14,7 @@ The access-test tool was created to help debug client connections or data upload
 
 ## Prereqs
 
-### Clone this repo
+### Clone this repo.
 The following documetation is based on creating a directory called ***omniverse*** somewhere on the client **local** filesystem. The name of this directory is up to the user.
 
 ```
