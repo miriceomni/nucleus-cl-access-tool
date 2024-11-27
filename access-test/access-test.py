@@ -30,6 +30,16 @@ from functools import wraps
 import omni.client
 import time
 
+
+# import sys
+# import subprocess
+
+# try:
+#     import websockets as ws
+# except ModuleNotFoundError:
+#     subprocess.check_call([sys.executable, "-m", "pip", "install", "websockets"])
+
+
 g_1 = None 
 g_2 = None
 
@@ -69,8 +79,6 @@ async def copy_file(sourcePath, destinationPath):
     result = await omni.client.copy_async(sourcePath,destinationPath,omni.client.CopyBehavior.OVERWRITE, "copy file")
     print(f'[access-test]: copy_file     : result: {result.name:<20} {destinationPath} ')
     
-
-
 def authentication_callback(url):
     print("[access-test]: Authenticating to {}".format(url)) # is printed once
     return g_control_data["nucleus_user"], g_control_data["nucleus_password"]
@@ -78,7 +86,7 @@ def authentication_callback(url):
 def connectionStatusCallback(url, connectionStatus):
     print("[access-test]: Connection status to {} is {}".format(url, connectionStatus))
     
-def connect_to_nucleus_with_token():
+def connect_to_nucleus():
     global g_1, g_2
 
     try:
@@ -95,16 +103,12 @@ def connect_to_nucleus_with_token():
 
 def startupOmniverse():
     g_control_data['start_time'] = time.time()
-    pass
+    connect_to_nucleus()
 
-
-
-def shutdownOmniverse(url):
-    omni.client.sign_out(url)
+def shutdownOmniverse():
+    omni.client.sign_out(get_nucleus_url())
     omni.client.shutdown()
-
-
-        
+  
 def process_directories(rootdir):
     omni_base_path = f"omniverse://{g_control_data['nucleus']}/{g_control_data['nucleus_path']}"
 
@@ -118,18 +122,16 @@ def process_directories(rootdir):
             process_directories(path)
         elif path.is_file:
             copy_file(source_path,omniverse_full_dir_path)
-            
-
     
 def do_some_work():
     process_directories(DATA_SOURCE_PATH)
 
-def list_root_dir():
+def list_directory():
     omni_base_path = f"omniverse://{g_control_data['nucleus']}/{g_control_data['nucleus_path']}"
     list_folder(omni_base_path)
 
 
-def build_infra(parser):
+def initClient(parser):
     def log_callback(thread, component, level, message):
         print(f"{gdt():.4f}  {thread} {component} {level} {message}")    
         
@@ -167,10 +169,6 @@ def read_nuclues_file():
     print(f'------------')
     print("")
 
-   
-
-
-
 def get_nucleus_url():
     return f"omniverse://{g_control_data['nucleus']}"
     
@@ -182,6 +180,21 @@ def pre_delete_path():
         destinationPath = omni_base_path + '/' + i.relative_path
         result = omni.client.delete(destinationPath)
         print(f'[access-test]: delete_obj    : result: {result.name:<20} {destinationPath} ')
+
+
+
+
+# #for later  asyncio.run(xxx())
+# import json
+# async def xxx():
+#     async with ws.connect("wss://ov-elysium.redshiftltd.net/omni/discovery") as websocket:
+#         message = {"type": "get", "resource": ""}
+#         await websocket.send(json.dumps(message))
+#         response = await websocket.recv()
+#         print(response)
+
+
+        
 
 
 
@@ -200,14 +213,12 @@ if __name__ == "__main__":
 
     parser.add_argument("-M", "--mode",  type=int, default=0, help='Tool method' )
 
-    build_infra(parser)
+    initClient(parser)
     
     startupOmniverse()
 
-    connect_to_nucleus_with_token()
-
     if g_control_data['mode'] == 3:
-        list_root_dir() 
+        list_directory() 
     
     if g_control_data['mode'] == 2:
         read_nuclues_file() 
@@ -218,6 +229,6 @@ if __name__ == "__main__":
             pre_delete_path()
         do_some_work()
 
-    shutdownOmniverse(get_nucleus_url())
+    shutdownOmniverse()
     
 
