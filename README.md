@@ -7,7 +7,10 @@ This repository contains a tool (access-tool) that can be used to debug connecti
 1. Open a connection to a Nucleus server. The connection can be authenticated with either a username/password or service-account/API key
 2. Perform a test based on the Mode (-M <value> argument) and output brief status messages. The main use of this tool is to activate the verbose option (-v) to get ALL logging steps. The output will be directed to standard out and can be re-directed to a file (output can be very long in some cases).
 3. Close the connection.
+
 This tool relies on the Connect SDK https://github.com/NVIDIA-Omniverse/connect-samples/releases to perform the majority of the logic. 
+- APIs here -> https://docs.omniverse.nvidia.com/kit/docs/client_library/latest/docs/python.html
+
 
 Tool Modes
 ```
@@ -16,6 +19,7 @@ Tool Modes
 -M 2 (read a file from Nucleus)
 -M 3
 ```
+
 
 ## Prereqs
 
@@ -74,14 +78,14 @@ $ ./build.sh
 
 
 ## Setup
-Once the Omniverse Connect Samples has been downloaded and built, update the `access-test.bat` or `access-test.sh` to define the path to the root of the Omniverse Connect Samples. These scripts have comments to where to make the modifications. Following is snippet from `access-test.bat`
+Once the Omniverse Connect Samples has been downloaded and built, update the `access-test.bat` or `access-test.sh` to define the path to the root of the Omniverse Connect Samples. These scripts (located in the ```access-tool``` sub-directory) have comments at the area to make the modifications. Following is snippet from `access-test.bat`
 
 ```
 ::
 ::  Change this line to point to the downloaded (and built)
 ::  Client library root dir. 
 ::
-set CLIENT_LIB_SDK_DIR=C:\omniverse\nucleus-cl-access-tool\connect-sdk\connect-samples-205.0.0\
+set CLIENT_LIB_SDK_DIR=C:\omniverse\nucleus-cl-access-tool\connect-sdk\connect-samples-205.0.0
 ```
 
 ## Usage
