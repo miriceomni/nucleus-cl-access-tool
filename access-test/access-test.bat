@@ -10,8 +10,8 @@ pushd "%~dp0"
 ::
 set CLIENT_LIB_SDK_DIR=C:\omniverse\nucleus-cl-access-tool\connect-sdk\connect-samples-205.0.0\
 
-set USD_LIB_DIR=%CLIENT_LIB_SDK_DIR%_build\windows-x86_64\release
-set PYTHON=%CLIENT_LIB_SDK_DIR%_build\target-deps\python\python.exe
+set USD_LIB_DIR=%CLIENT_LIB_SDK_DIR%\_build\windows-x86_64\release
+set PYTHON=%CLIENT_LIB_SDK_DIR%\_build\target-deps\python\python.exe
 
 set PATH=%PATH%;%USD_LIB_DIR%
 set PYTHONPATH=%USD_LIB_DIR%\python;%USD_LIB_DIR%\bindings-python
