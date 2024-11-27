@@ -8,7 +8,7 @@ pushd "%~dp0"
 ::  Change this line to point to the downloaded (and built)
 ::  Client library root dir. 
 ::
-set CLIENT_LIB_SDK_DIR=C:\omniverse\nucleus-cl-access-tool\connect-sdk\connect-samples-205.0.0\
+set CLIENT_LIB_SDK_DIR=C:\omniverse\nucleus-cl-access-tool\connect-sdk\connect-samples-205.0.0
 
 set USD_LIB_DIR=%CLIENT_LIB_SDK_DIR%\_build\windows-x86_64\release
 set PYTHON=%CLIENT_LIB_SDK_DIR%\_build\target-deps\python\python.exe
