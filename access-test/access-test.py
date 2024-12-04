@@ -44,10 +44,10 @@ g_1 = None
 g_2 = None
 
 g_control_data = {
-    'nucleus'           : 'ov-elysium.redshiftltd.net',
+    'nucleus'           : 'ov-elysium.redshiftltd.com',
     'nucleus_path'      : 'Projects/nat',
     'nucleus_user'      : 'omniverse',
-    'nucleus_password'  : 'RR123456',
+    'nucleus_password'  : 'xxxxxx',
 }
 
 
@@ -203,11 +203,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Python Client to copy data from a local file system to Nucleus Server",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('nucleus',      type=str,help="example: ov-elysium.redshiftltd.net")
+    parser.add_argument('nucleus',      type=str,help="example: ov-elysium.redshiftltd.com")
     parser.add_argument('nucleus_path', type=str,help="Projects/SomeFolder (no leading '/')")
 
     parser.add_argument("-u", "--user_id",  action='store', default="omniverse")
-    parser.add_argument("-p", "--password", action='store', default="123456")
+    parser.add_argument("-p", "--password", action='store', default="xxxxxx")
     parser.add_argument("-v", "--verbose",  action="store_true", default=False, help='debug log data' )
     parser.add_argument("-d", "--pre_delete_path",  action="store_true", default=False )
 
