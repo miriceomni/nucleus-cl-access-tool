@@ -29,6 +29,7 @@ import asyncio
 from functools import wraps
 import omni.client
 import time
+import numpy as np
 
 
 # import sys
@@ -62,7 +63,10 @@ def asyncio_wrap(func):
     def wrapper(*args, **kwargs):
         asyncio.get_event_loop().run_until_complete(func(*args, **kwargs))
     return wrapper
-     
+
+#
+# 
+#      
 @asyncio_wrap
 async def create_folder(fullFolderPath):
     result = await omni.client.create_folder_async(fullFolderPath)
@@ -79,13 +83,21 @@ async def copy_file(sourcePath, destinationPath):
     result = await omni.client.copy_async(sourcePath,destinationPath,omni.client.CopyBehavior.OVERWRITE, "copy file")
     print(f'[access-test]: copy_file     : result: {result.name:<20} {destinationPath} ')
     
+@asyncio_wrap
+async def write_file(destinationPath,buffer):
+    result = await omni.client.write_file_async(destinationPath,buffer)
+    print(f'[access-test]: write file    : result: {result.name:<20} {destinationPath} ')
+
+#
+# 
+#     
 def authentication_callback(url):
     print("[access-test]: Authenticating to {}".format(url)) # is printed once
     return g_control_data["nucleus_user"], g_control_data["nucleus_password"]
    
 def connectionStatusCallback(url, connectionStatus):
     print("[access-test]: Connection status to {} is {}".format(url, connectionStatus))
-    
+  
 def connect_to_nucleus():
     global g_1, g_2
 
@@ -109,10 +121,30 @@ def shutdownOmniverse():
     omni.client.sign_out(get_nucleus_url())
     omni.client.shutdown()
   
-def process_directories(rootdir):
+#
+#
+def write_nucleus_file():
     omni_base_path = f"omniverse://{g_control_data['nucleus']}/{g_control_data['nucleus_path']}"
 
-    for path in Path(rootdir).iterdir():
+    arr1 = np.random.rand(g_control_data["file_size"])
+
+    start_time = time.time()
+
+    write_file(omni_base_path,arr1)
+  
+    end_time = time.time()
+    execution_time = end_time - start_time
+    rate = ((g_control_data["file_size"]/execution_time)*8)/1000000
+
+    print(f'Execution time: {execution_time:.1f} seconds for {g_control_data["file_size"]} bytes {rate:.2f} Mb/sec')
+
+    
+#
+#
+def process_directories(root_dir):
+    omni_base_path = f"omniverse://{g_control_data['nucleus']}/{g_control_data['nucleus_path']}"
+
+    for path in Path(root_dir).iterdir():
        
         source_path = str(path).replace("\\","/")
         omniverse_full_dir_path = source_path.replace(DATA_SOURCE_PATH, omni_base_path)
@@ -123,10 +155,10 @@ def process_directories(rootdir):
         elif path.is_file:
             copy_file(source_path,omniverse_full_dir_path)
     
-def do_some_work():
+def write_nucleus_dirs():
     process_directories(DATA_SOURCE_PATH)
 
-def list_directory():
+def list_nucleus_directory():
     omni_base_path = f"omniverse://{g_control_data['nucleus']}/{g_control_data['nucleus_path']}"
     list_folder(omni_base_path)
 
@@ -143,6 +175,7 @@ def initClient(parser):
     g_control_data["nucleus_password"] = args.password
     g_control_data["pre_delete_path"] = args.pre_delete_path
     g_control_data["mode"] = args.mode
+    g_control_data["file_size"] = 2 ** args.file_size
 
 
     if g_control_data["nucleus_user"] == '$omni-api-token':
@@ -156,7 +189,7 @@ def initClient(parser):
         omni.client.set_log_level(omni.client.LogLevel.DEBUG)
         omni.client.set_log_callback(log_callback)
 
-def read_nuclues_file():
+def read_nucleus_file():
     omni_base_path = f"omniverse://{g_control_data['nucleus']}/{g_control_data['nucleus_path']}"
     length = -1 
 
@@ -212,22 +245,25 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--pre_delete_path",  action="store_true", default=False )
 
     parser.add_argument("-M", "--mode",  type=int, default=0, help='Tool method' )
+    parser.add_argument("-s", "--file_size",  type=int, default=4, help='File size = 2^N' )
 
     initClient(parser)
     
     startupOmniverse()
 
-    if g_control_data['mode'] == 3:
-        list_directory() 
-    
-    if g_control_data['mode'] == 2:
-        read_nuclues_file() 
-
-
     if g_control_data['mode'] == 1:
         if g_control_data["pre_delete_path"]:
             pre_delete_path()
-        do_some_work()
+        write_nucleus_dirs()
+
+    if g_control_data['mode'] == 2:
+        read_nucleus_file() 
+
+    if g_control_data['mode'] == 3:
+        list_nucleus_directory() 
+
+    if g_control_data['mode'] == 4:
+        write_nucleus_file() 
 
     shutdownOmniverse()
     
