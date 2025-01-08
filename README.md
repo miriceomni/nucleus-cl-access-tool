@@ -202,6 +202,8 @@ If the `-v` option is used, a verbose log of all steps will be output to the con
 
 ## Support
 TBD.
+C:/omniverse/public/nucleus-cl-access-tool/connect-sdk/connect-samples-205.0.0/_build/target-deps/python/python.exe -m pip install numpy
+
 
 
 ## Authors and acknowledgment
